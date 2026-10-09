@@ -94,6 +94,12 @@ export class AdminService {
       await (this.prisma as any).fieldVisit.deleteMany({ where: { employeeId: id } });
     }
 
+    // Delete email-related records
+    await (this.prisma as any).emailMessage.deleteMany({ where: { employeeId: id } });
+    await (this.prisma as any).emailThread.deleteMany({ where: { employeeId: id } });
+    await (this.prisma as any).emailLog.deleteMany({ where: { employeeId: id } });
+    await (this.prisma as any).gmailConnection.deleteMany({ where: { employeeId: id } });
+
     // Finally delete the employee
     await (this.prisma as any).employee.delete({ where: { id } });
 
@@ -259,7 +265,8 @@ export class AdminService {
       { header: 'Employee Name', key: (e: any) => e.employee?.name || '' },
       { header: 'Date', key: (e: any) => new Date(e.createdAt).toLocaleDateString('en-GB'), forceText: true },
       { header: 'Time', key: (e: any) => new Date(e.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }), forceText: true },
-      { header: 'Follow Up Date', key: (e: any) => {
+      {
+        header: 'Follow Up Date', key: (e: any) => {
           const followUps = Array.isArray(e.followUps) ? e.followUps : [];
 
           const pendingFollowUps = followUps
