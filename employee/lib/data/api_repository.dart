@@ -1,22 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'api_config.dart';
 import 'models/models.dart';
 
-String get baseUrl {
-  if (const bool.hasEnvironment('API_URL')) {
-    return const String.fromEnvironment('API_URL');
-  }
-  if (kDebugMode) {
-    if (!kIsWeb && Platform.isAndroid) {
-      return 'http://10.0.2.2:3000';
-    }
-    return 'http://localhost:3000';
-  }
-  throw ApiException('API_URL is not configured for production environment');
-}
+export 'api_config.dart';
+
+String get baseUrl => ApiConfig.baseUrl;
 
 class ApiException implements Exception {
   final String message;

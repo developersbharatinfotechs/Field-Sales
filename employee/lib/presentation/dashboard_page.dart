@@ -5,7 +5,7 @@ import 'app_theme.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/profile_provider.dart';
 import 'pages/new_visit_page.dart';
-import '../../data/models/models.dart';
+import '../data/models/models.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});

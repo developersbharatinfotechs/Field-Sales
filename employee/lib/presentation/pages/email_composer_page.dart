@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../../data/api_config.dart';
 import '../app_theme.dart';
 import '../providers/email_provider.dart';
 
@@ -85,23 +84,7 @@ class _EmailComposerPageState
     'gif',
   ];
 
-  String get _baseUrl {
-    if (const bool.hasEnvironment('API_URL')) {
-      return const String.fromEnvironment('API_URL');
-    }
-
-    if (kDebugMode) {
-      if (!kIsWeb && Platform.isAndroid) {
-        return 'http://10.0.2.2:3000';
-      }
-
-      return 'http://localhost:3000';
-    }
-
-    throw Exception(
-      'API_URL is not configured for production environment.',
-    );
-  }
+  String get _baseUrl => ApiConfig.baseUrl;
 
   @override
   void initState() {

@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../lib/presentation/login_page.dart';
-import '../../lib/data/auth_repository.dart';
-import '../../lib/presentation/providers/auth_provider.dart';
+import 'package:Kshetra/presentation/login_page.dart';
+import 'package:Kshetra/presentation/home_shell.dart';
+import 'package:Kshetra/data/auth_repository.dart';
+import 'package:Kshetra/presentation/providers/auth_provider.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
@@ -50,8 +51,8 @@ void main() {
   testWidgets('PIN-length validation shows error for short PIN', (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
-    // Enter valid employee ID and short PIN
-    await tester.enterText(find.byKey(const Key('employeeIdField')), 'EMP123');
+    // Enter valid employee ID format and short PIN (< 4 digits)
+    await tester.enterText(find.byKey(const Key('employeeIdField')), 'SE-FS-001');
     await tester.enterText(find.byKey(const Key('pinField')), '123');
 
     final loginButton = find.byKey(const Key('loginButton'));
@@ -69,8 +70,8 @@ void main() {
     // Setup mock repository to return a delayed response
     when(() => mockAuthRepository.login(any(), any())).thenAnswer(
       (_) async {
-        await Future.delayed(const Duration(seconds: 1));
-        return {'token': 'test_token', 'role': 'test_role'};
+        await Future.delayed(const Duration(milliseconds: 200));
+        return {'token': 'test_token', 'role': 'EMPLOYEE', 'isFirstLogin': false};
       },
     );
     when(() => mockSecureStorage.write(key: any(named: 'key'), value: any(named: 'value')))
@@ -79,8 +80,8 @@ void main() {
     await tester.pumpWidget(createWidgetUnderTest());
 
     // Enter valid credentials
-    await tester.enterText(find.byKey(const Key('employeeIdField')), 'EMP123');
-    await tester.enterText(find.byKey(const Key('pinField')), '1234');
+    await tester.enterText(find.byKey(const Key('employeeIdField')), 'SE-FS-001');
+    await tester.enterText(find.byKey(const Key('pinField')), '123456');
 
     // Tap login button
     final loginButton = find.byKey(const Key('loginButton'));
@@ -96,10 +97,10 @@ void main() {
     final elevatedButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
     expect(elevatedButton.onPressed, isNull);
 
-    // Wait for the future to complete
+    // Wait for the future to complete and page transition to finish
     await tester.pumpAndSettle();
 
-    // Verify navigation to dashboard occurred
-    expect(find.text('Welcome to the Dashboard!'), findsOneWidget);
+    // Verify navigation to home shell occurred
+    expect(find.byType(HomeShell), findsOneWidget);
   });
 }
